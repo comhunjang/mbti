@@ -1,3 +1,15 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="color-scheme" content="light dark">
+<meta name="description" content="고등학교 창의적 체험활동용 MBTI 성격유형 검사 32문항. 유형별 공부 방법, 계열·학과, 직업 정보를 A4 한 장 결과지로 저장·인쇄할 수 있습니다.">
+<meta name="format-detection" content="telephone=no">
+<meta property="og:type" content="website">
+<meta property="og:title" content="MBTI 진로 나침반">
+<meta property="og:description" content="32문항 MBTI 검사와 유형별 공부법·진로·학과·직업 안내">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%F0%9F%A7%AD%3C/text%3E%3C/svg%3E">
 <title>MBTI 진로 나침반</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -353,7 +365,8 @@ button{font-family:inherit;color:inherit}
   .wbox em{font-size:11px;font-style:normal;color:#777;margin-top:2px}
 }
 </style>
-
+</head>
+<body>
 <header class="masthead no-print">
   <div class="wrap">
     <div class="mark" aria-hidden="true"></div>
@@ -1609,7 +1622,14 @@ function finish(){
           else throw err;
         }
       } else if(topLevel){
-        window.print();
+        /* 일반 웹사이트(깃허브 페이지 등)나 내려받은 파일에서는 브라우저 저장 기능을 쓴다 */
+        const blob = new Blob([await canvasesToPdf(pages)], {type:"application/pdf"});
+        const href = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = href; a.download = `${base}.pdf`;
+        document.body.appendChild(a); a.click(); a.remove();
+        setTimeout(() => URL.revokeObjectURL(href), 5000);
+        toast(`${base}.pdf 로 저장했습니다.`);
       } else {
         /* 마지막 대비책 : 결과 이미지를 새 창에 띄워 길게 눌러 저장하도록 안내 */
         const url = canvasesToPng(pages).toDataURL("image/png");
@@ -1670,3 +1690,5 @@ ${OFFICIAL.map(o => `- ${o.name} : ${o.url}`).join("\n")}
   requestAnimationFrame(() => document.querySelectorAll(".track i").forEach(el => el.style.width = el.style.width));
 }
 </script>
+</body>
+</html>
